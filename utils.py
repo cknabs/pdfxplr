@@ -1,7 +1,9 @@
 import os
-import chardet
 import time
 from binascii import b2a_hex
+
+import chardet
+
 from pdfxplr import printout
 
 ENCODINGS = ['utf-8', 'utf-16', 'ascii', 'mac-roman', 'cp1256']

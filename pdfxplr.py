@@ -1,25 +1,24 @@
-import re
-import os
-import io
-import sys
-import rex
-import html
-import time
 import argparse
+import html
+import io
+import re
+import sys
+from io import StringIO
+
+from PIL import Image
+from PIL.ExifTags import GPSTAGS, TAGS
+from pdfminer.converter import PDFPageAggregator
+from pdfminer.layout import LAParams, LTFigure, LTImage
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdftypes import PDFObjRef, resolve1
+
 import dumppdf
+import rex
 import xmpparser
 from utils import *
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
-from io import StringIO
-from dateutil import parser as dateparser
-from pdfminer.pdfparser import PDFParser
-from pdfminer.pdfdocument import PDFDocument
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import PDFPageAggregator
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine, LTFigure, LTImage, LTChar
-from pdfminer.pdftypes import PDFObjRef, resolve1
 
 VERBOSE = False
 # global vars?
