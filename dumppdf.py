@@ -33,7 +33,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 """
-#!/usr/bin/env python
+# !/usr/bin/env python
 #
 # dumppdf.py - dump pdf contents in XML format.
 #
@@ -52,11 +52,11 @@ from pdfminer.utils import isnumber
 
 from pdfminer.layout import LAParams, LTImage, LTFigure
 
-
-
 ESC_PAT = re.compile(r'[\000-\037&<>()"\042\047\134\177-\377]')
+
+
 def e(s):
-    return ESC_PAT.sub(lambda m:'&#%d;' % ord(m.group(0)), s)
+    return ESC_PAT.sub(lambda m: '&#%d;' % ord(m.group(0)), s)
 
 
 # dumpxml
@@ -64,10 +64,10 @@ def dumpxml(out, obj, codec=None):
     if obj is None:
         out.write('<null />')
         return
-        
+
     if isinstance(obj, dict):
         out.write('<dict size="%d">\n' % len(obj))
-        for (k,v) in obj.items():
+        for (k, v) in obj.items():
             out.write('<key>%s</key>\n' % k)
             out.write('<value>')
             dumpxml(out, v)
@@ -124,12 +124,11 @@ def dumpxml(out, obj, codec=None):
         out.write('<number>%s</number>' % obj)
         return
 
-
-
-    #raise TypeError(obj)
+    # raise TypeError(obj)
     print('Exception')
     print(obj)
     print(type(obj))
+
 
 # dumptrailers
 def dumptrailers(out, doc):
@@ -138,6 +137,7 @@ def dumptrailers(out, doc):
         dumpxml(out, xref.trailer)
         out.write('\n</trailer>\n\n')
     return
+
 
 # dumpallobjs
 def dumpallobjs(out, doc, codec=None):
@@ -155,10 +155,11 @@ def dumpallobjs(out, doc, codec=None):
                 out.write('\n</object>\n\n')
             except PDFObjectNotFound as e:
                 print('[!] Warning: pdf object not found: %r' % e, file=sys.stderr)
-                pass                
+                pass
     dumptrailers(out, doc)
     out.write('</pdf>')
     return
+
 
 # dumpoutline
 def dumpoutline(outfp, fname, objids, pagenos, password='',
@@ -167,8 +168,9 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     parser = PDFParser(fp)
     doc = PDFDocument(parser, password)
     doc.is_extractable = True
-    pages = dict( (page.pageid, pageno) for (pageno,page)
-                  in enumerate(PDFPage.create_pages(doc)) )
+    pages = dict((page.pageid, pageno) for (pageno, page)
+                 in enumerate(PDFPage.create_pages(doc)))
+
     def resolve_dest(dest):
         if isinstance(dest, str):
             dest = resolve1(doc.get_dest(dest))
@@ -177,10 +179,11 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
         if isinstance(dest, dict):
             dest = dest['D']
         return dest
+
     try:
         outlines = doc.get_outlines()
         outfp.write('<outlines>\n')
-        for (level,title,dest,a,se) in outlines:
+        for (level, title, dest, a, se) in outlines:
             pageno = None
             if dest:
                 dest = resolve_dest(dest)
@@ -208,9 +211,12 @@ def dumpoutline(outfp, fname, objids, pagenos, password='',
     fp.close()
     return
 
+
 # extractembedded
 LITERAL_FILESPEC = LIT('Filespec')
 LITERAL_EMBEDDEDFILE = LIT('EmbeddedFile')
+
+
 def extractembedded(outfp, fname, objids, pagenos, password='',
                     dumpall=False, codec=None, extractdir=None):
     def extract1(obj):
@@ -245,6 +251,7 @@ def extractembedded(outfp, fname, objids, pagenos, password='',
                 extract1(obj)
     return
 
+
 # dumppdf
 def dumppdf(outfp, fname, objids, pagenos, password='',
             dumpall=False, codec=None, extractdir=None):
@@ -257,7 +264,7 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
             obj = doc.getobj(objid)
             dumpxml(outfp, obj, codec=codec)
     if pagenos:
-        for (pageno,page) in enumerate(PDFPage.create_pages(doc)):
+        for (pageno, page) in enumerate(PDFPage.create_pages(doc)):
             if pageno in pagenos:
                 if codec:
                     for obj in page.contents:
@@ -270,7 +277,7 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
     if (not objids) and (not pagenos) and (not dumpall):
         dumptrailers(outfp, doc)
     fp.close()
-    if codec not in ('raw','binary'):
+    if codec not in ('raw', 'binary'):
         outfp.write('\n')
     return
 
@@ -279,8 +286,10 @@ def dumppdf(outfp, fname, objids, pagenos, password='',
 def main(argv):
     import getopt
     def usage():
-        print ('usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-T] [-E directory] [-i objid] file ...' % argv[0])
+        print('usage: %s [-d] [-a] [-p pageid] [-P password] [-r|-b|-t] [-T] [-E directory] [-i objid] file ...' % argv[
+            0])
         return 100
+
     try:
         (opts, args) = getopt.getopt(argv[1:], 'dap:P:rbtTE:i:')
     except getopt.GetoptError:
@@ -296,16 +305,26 @@ def main(argv):
     outfp = sys.stdout
     extractdir = None
     for (k, v) in opts:
-        if k == '-d': debug += 1
-        elif k == '-o': outfp = file(v, 'wb')
-        elif k == '-i': objids.extend( int(x) for x in v.split(',') )
-        elif k == '-p': pagenos.update( int(x)-1 for x in v.split(',') )
-        elif k == '-P': password = v
-        elif k == '-a': dumpall = True
-        elif k == '-r': codec = 'raw'
-        elif k == '-b': codec = 'binary'
-        elif k == '-t': codec = 'text'
-        elif k == '-T': proc = dumpoutline
+        if k == '-d':
+            debug += 1
+        elif k == '-o':
+            outfp = file(v, 'wb')
+        elif k == '-i':
+            objids.extend(int(x) for x in v.split(','))
+        elif k == '-p':
+            pagenos.update(int(x) - 1 for x in v.split(','))
+        elif k == '-P':
+            password = v
+        elif k == '-a':
+            dumpall = True
+        elif k == '-r':
+            codec = 'raw'
+        elif k == '-b':
+            codec = 'binary'
+        elif k == '-t':
+            codec = 'text'
+        elif k == '-T':
+            proc = dumpoutline
         elif k == '-E':
             extractdir = v
             proc = extractembedded
@@ -317,5 +336,6 @@ def main(argv):
         proc(outfp, fname, objids, pagenos, password=password,
              dumpall=dumpall, codec=codec, extractdir=extractdir)
     return
+
 
 if __name__ == '__main__': sys.exit(main(sys.argv))

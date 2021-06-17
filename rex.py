@@ -24,8 +24,6 @@ This regex pattern matches IP:PORT
 """
 IP_REGEX = r"""[0-9]+(?:\.[0-9]+){3}:[0-9]+"""
 
-
-
 """
 My regexes
 """
